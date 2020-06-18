@@ -5,7 +5,8 @@
             [zebra.payment-intents :as payment-intent]
             [webdriver.core :refer :all]
             [zebra.helpers.constants :refer [api-key tokens]])
-  (:import (org.openqa.selenium.htmlunit HtmlUnitDriver)))
+  (:import (org.openqa.selenium.htmlunit HtmlUnitDriver)
+           (com.gargoylesoftware.htmlunit BrowserVersion)))
 
 
 (deftest create-payment-intent
@@ -69,7 +70,9 @@
                          api-key)]
 
         (do
-          (def driver {:driver (new HtmlUnitDriver true)})
+          (def driver {:driver (new HtmlUnitDriver BrowserVersion/FIREFOX_68 true)})
+          ;(def driver (create-driver {:driver-type :firefox :driver-args ["--headless"]}))
+          (to driver (:url (:redirect_to_url (:next_action payment-intent))))
           (wait-for-element driver :name "__privateStripeFrame4")
           (iframe driver "__privateStripeFrame4")
           (wait-for-element driver :name "stripe-challenge-frame")
